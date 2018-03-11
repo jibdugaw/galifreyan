@@ -9,6 +9,21 @@ import (
 )
 
 func main() {
+
+	if true {
+		const S = 1024
+		dc := gg.NewContext(S, S)
+		dc.SetRGB(1, 1, 1)
+		dc.Clear()
+		dc.SetRGB(0, 0, 0)
+		if err := dc.LoadFontFace("/Library/Fonts/Arial.ttf", 14); err != nil {
+			panic(err)
+		}
+		dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
+		dc.DrawStringAnchored("bob, world!", S/2, S/2, 0.5, 0.5)
+		dc.DrawStringAnchored("COLLISION", S/2, S/2, 0.5, 0.5)
+		dc.SavePNG("test.png")
+	}
 	//input := "gallifrey falls no more"
 	input := "Doctor it is so much bigger on the inside"
 	//input := "i am the doctor"
@@ -22,9 +37,12 @@ func main() {
 	sentence := gglyphs.NewColloquy(originX, originY, float64(0.8)*originX, input)
 
 	dc := gg.NewContext(1000, 1000)
+	dc.SetRGB(1, 1, 1)
+	dc.Clear()
+	dc.SetRGB(0, 0, 0)
 	// using originX, originY, radius and offsets for each glyph in the colloquy
 	// using originX, originY and radius of colloquy draw each word glyph
-	dc.SetLineWidth(10)
+	//dc.SetLineWidth(10)
 	sentence.Draw(dc)
 	//DrawB(dc)
 	//dc.DrawArc(400, 325, 300, Radians(0), Radians(90))

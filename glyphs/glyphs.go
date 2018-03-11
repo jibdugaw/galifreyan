@@ -131,8 +131,14 @@ func (c *Colloquy) Draw(dc *gg.Context) {
 
 // Draw draws an individual Glyph
 func (g *Glyph) Draw(dc *gg.Context) {
-	fmt.Println("TODO - implement individual GlyphChar drawing")
-	dc.DrawCircle(g.X, g.Y, g.Radius)
+	fmt.Printf("TODO - implement individual GlyphChar drawing: %v\n", g.Word)
+	fmt.Printf("Glyph: (%v) to be anchored at (%v, %v)\n", g.Word, g.X, g.Y)
+	//dc.DrawCircle(g.X, g.Y, g.Radius)
+	if err := dc.LoadFontFace("/Library/Fonts/Arial.ttf", 14); err != nil {
+		panic(err)
+	}
+	dc.DrawStringAnchored(g.Word, g.X, g.Y, .5, .5)
+	dc.DrawCircle(g.X, g.Y, 20)
 }
 
 // Parse will parse the Colloquy sentence and seed Glyphs
