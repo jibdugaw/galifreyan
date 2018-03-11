@@ -8,16 +8,57 @@ import (
 	"github.com/fogleman/gg"
 )
 
-const (
-	open = iota
-	inside
-	arc
-	on
-)
-
 // RADIANS defines the number of RADIANS comprising a circle
 // fractions of this value are used throughout
 const RADIANS float64 = 2 * math.Pi
+
+// charMap maps "characters" to GlyphChar base and decoration
+var charMap = map[string][]int{
+	"b":  {0, 0},
+	"ch": {0, 1},
+	"d":  {0, 2},
+	"f":  {0, 3},
+	"g":  {0, 4},
+	"h":  {0, 5},
+
+	"j": {1, 0},
+	"k": {1, 1},
+	"l": {1, 2},
+	"m": {1, 3},
+	"n": {1, 4},
+	"p": {1, 5},
+
+	"t":  {2, 0},
+	"sh": {2, 1},
+	"r":  {2, 2},
+	"s":  {2, 3},
+	"v":  {2, 4},
+	"w":  {2, 5},
+
+	"th": {3, 0},
+	"y":  {3, 1},
+	"Z":  {3, 2},
+	"ng": {3, 3},
+	"q":  {3, 4},
+	"x":  {3, 5},
+
+	"a": {4, 0},
+	"e": {4, 1},
+	"i": {4, 2},
+	"o": {4, 3},
+	"u": {4, 4},
+}
+
+/*
+//assigns the subtype
+var map = {
+    "b": 1, "ch": 2, "d": 3, "f": 4, "g": 5, "h": 6,
+    "j": 1, "k": 2, "l": 3, "m": 4, "n": 5, "p": 6,
+    "t": 1, "sh": 2, "r": 3, "s": 4, "v": 5, "w": 6,
+    "th": 1, "y": 2, "z": 3, "ng": 4, "qu": 5, "x": 6,
+    "a": 1, "e": 2, "i": 3, "o": 4, "u": 5
+};
+*/
 
 // Glyph represents the galifrayen transliteration of a character
 type Glyph struct {
@@ -33,9 +74,9 @@ type Glyph struct {
 // GlyphChar represents a single character to be converted into a Galifreyan word glyph
 // TODO - decide if this makes sense or not
 type GlyphChar struct {
-	Letter  string // TODO - Gallifreyan is phonic some sounds have multiple characters
-	Type    int
-	SubType int
+	Letter     string // TODO - Gallifreyan is phonic some sounds have multiple characters
+	Base       int
+	Decoration int
 }
 
 // Colloquy represents a string of words (aka sentence) in Galifreyan
@@ -64,22 +105,22 @@ func NewColloquy(x0 float64, y0 float64, r float64, sentence string) *Colloquy {
 	return ret
 }
 
-// parse parses a Glyph and seeds the GlyphChar
-func (g *Glyph) parse() {
+// Parse parses a Glyph and seeds the GlyphChar
+func (g *Glyph) Parse() {
 	midWord := true
+	var letter string
 	for i := 0; i < len(g.Word); i++ {
 		if i+1 >= len(g.Word) {
 			midWord = !midWord
 		}
-		gc := &GlyphChar{"  ", -1, -1}
 		switch g.Word[i] {
 		case 'c':
 		case 's':
 		case 't':
 			// if next is 'h' then substitute
 			if midWord && g.Word[i+1] == 'h' {
-				gc.Letter = string(g.Word[i])
-				gc.Letter += string(g.Word[i+1])
+				letter = string(g.Word[i])
+				letter += string(g.Word[i+1])
 				i++
 				break
 			}
@@ -88,36 +129,37 @@ func (g *Glyph) parse() {
 			if midWord && g.Word[i] == 'c' {
 
 				if g.Word[i] == 'i' || g.Word[i] == 'e' || g.Word[i] == 'y' {
-					gc.Letter = string('s')
+					letter = string('s')
 					break
 				} else {
-					gc.Letter = string('k')
+					letter = string('k')
 					break
 				}
 			}
-			gc.Letter = string(g.Word[i])
+			letter = string(g.Word[i])
 			break
 			// check for rune combinaion 'ng'
 		case 'n':
 			if midWord && g.Word[i+1] == 'g' {
-				gc.Letter = string(g.Word[i])
-				gc.Letter += string(g.Word[i+1])
+				letter = string(g.Word[i])
+				letter += string(g.Word[i+1])
 				i++
 				break
 			}
 			// check for rune combinaion 'qu'
 		case 'q':
 			if midWord && g.Word[i+1] == 'u' {
-				gc.Letter = string(g.Word[i])
-				gc.Letter += string(g.Word[i+1])
+				letter = string(g.Word[i])
+				letter += string(g.Word[i+1])
 				i++
 				break
 			}
 		default:
-			gc.Letter = string(g.Word[i])
+			letter = string(g.Word[i])
 			break
 		}
 	}
+	g.Characters = append(g.Characters, newGlyphChar(letter))
 }
 
 // Draw iterates over Glyphs of a Coloquy and draws them to the provided canvas
@@ -174,7 +216,11 @@ func NewGlyph(c *Colloquy, w string, angle float64) *Glyph {
 	return ret
 }
 
-// Parse will parse the word assciated with the glyph seeding GlyphChars
-func (*Glyph) Parse() {
-	// TODO
+func newGlyphChar(l string) *GlyphChar {
+	ret := &GlyphChar{}
+	ret.Letter = l
+	ret.Base = charMap[l][0]
+	ret.Decoration = charMap[l][1]
+	return ret
+
 }
