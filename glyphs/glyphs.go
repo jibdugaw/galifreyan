@@ -56,7 +56,7 @@ func NewColloquy(x0 float64, y0 float64, r float64, s float64, sent string, gs [
 // NewGlyph returns a properly defaulted Glyph object
 func NewGlyph(c *Colloquy, x float64, y float64, w string, step float64, radius float64) *Glyph {
 	// split sentence by white space
-	g := &Glyph{c, x, y, w, nil, 0, 0}
+	g := &Glyph{c, x, y, w, make([]*GlyphChar, 2), step, radius}
 	g.parse()
 	return g
 }
