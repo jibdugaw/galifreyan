@@ -62,14 +62,18 @@ func NewGlyph(c *Colloquy, x float64, y float64, w string, step float64, radius 
 }
 
 func (g *Glyph) parse() {
+	midWord := true
 	for i := 0; i < len(g.Word); i++ {
+		if i+1 >= len(g.Word) {
+			midWord = !midWord
+		}
 		gc := &GlyphChar{"  ", -1, -1}
 		switch g.Word[i] {
 		case 'c':
 		case 's':
 		case 't':
 			// if next is 'h' then substitute
-			if g.Word[i+1] == 'h' {
+			if midWord && g.Word[i+1] == 'h' {
 				gc.Letter = string(g.Word[i])
 				gc.Letter += string(g.Word[i+1])
 				i++
@@ -77,7 +81,7 @@ func (g *Glyph) parse() {
 			}
 			// rune 'c' has two special cases make it soft or hard
 			// SOFT - 'c' followed by any one of [iey]
-			if g.Word[i] == 'c' {
+			if midWord && g.Word[i] == 'c' {
 
 				if g.Word[i] == 'i' || g.Word[i] == 'e' || g.Word[i] == 'y' {
 					gc.Letter = string('s')
@@ -91,7 +95,7 @@ func (g *Glyph) parse() {
 			break
 			// check for rune combinaion 'ng'
 		case 'n':
-			if g.Word[i+1] == 'g' {
+			if midWord && g.Word[i+1] == 'g' {
 				gc.Letter = string(g.Word[i])
 				gc.Letter += string(g.Word[i+1])
 				i++
@@ -99,7 +103,7 @@ func (g *Glyph) parse() {
 			}
 			// check for rune combinaion 'qu'
 		case 'q':
-			if g.Word[i+1] == 'u' {
+			if midWord && g.Word[i+1] == 'u' {
 				gc.Letter = string(g.Word[i])
 				gc.Letter += string(g.Word[i+1])
 				i++

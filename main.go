@@ -34,15 +34,16 @@ func main() {
 */
 
 func main() {
-	input := "gallifrey falls no more"
+	//input := "gallifrey falls no more"
+	input := "Doctor it is so much bigger on the inside"
 	words := strings.Fields(input)
 	wordCount := float64(len(words))
 	wordStep := RADIANS / wordCount
 	// MAGERY: Gallifreyan characters start at the 6 o'clock position when
-	// looking at a clock face, or 90º and run counter clockwise
+	// looking at a clock face, or 270º and run counter clockwise
 	firstWordStart := .75 * RADIANS
 
-	// our globals which wil be the canvas size and then some basic starting point stuff
+	// our globals which will be the canvas size and then some basic starting point stuff
 	canvasSide := float64(1000)
 	originX := canvasSide / 2
 	originY := canvasSide / 2
@@ -83,6 +84,7 @@ func Radians(degrees float64) float64 {
 // DrawColloquy iterates over Glyphs of a Coloquy and draws them
 func DrawColloquy(x0 float64, y0 float64, dc *gg.Context, c *gglyphs.Colloquy) {
 	// iterate glyphs and draw those
+
 	for i := range c.Glyphs {
 		fmt.Printf("working on Glyph: %v\n", c.Glyphs[i])
 		deltaX := float64(c.Radius) * math.Cos(c.Glyphs[i].Step)
@@ -98,9 +100,6 @@ func DrawColloquy(x0 float64, y0 float64, dc *gg.Context, c *gglyphs.Colloquy) {
 			}
 			dc.SetRGB(255, 0, 0)
 			fmt.Printf("I think I'm in quadrant I (deltaX, deltaY) = (%v,%v)\n", deltaX, deltaY)
-			fmt.Printf("(x,y) = (%v, %v)\n", float64(x0)+deltaX, float64(y0)+deltaY)
-
-			dc.DrawCircle(c.Glyphs[i].XPos, c.Glyphs[i].YPos, c.Glyphs[i].Radius)
 			break
 		case c.Glyphs[i].Step <= .5*RADIANS:
 			if deltaX > 0 {
@@ -112,8 +111,8 @@ func DrawColloquy(x0 float64, y0 float64, dc *gg.Context, c *gglyphs.Colloquy) {
 			dc.SetRGB(0, 255, 0)
 			fmt.Printf("I think I'm in quadrant II (deltaX, deltaY) = (%v,%v)\n", deltaX, deltaY)
 			fmt.Printf("(x,y) = (%v, %v)\n", float64(x0)+deltaX, float64(y0)+deltaY)
-			dc.DrawCircle(c.Glyphs[i].XPos, c.Glyphs[i].YPos, c.Glyphs[i].Radius)
 			break
+
 		case c.Glyphs[i].Step <= .75*RADIANS:
 			if deltaX > 0 {
 				deltaX = -deltaX
@@ -124,8 +123,8 @@ func DrawColloquy(x0 float64, y0 float64, dc *gg.Context, c *gglyphs.Colloquy) {
 			dc.SetRGB(0, 0, 255)
 			fmt.Printf("I think I'm in quadrant III (deltaX, deltaY) = (%v,%v)\n", deltaX, deltaY)
 			fmt.Printf("(x,y) = (%v, %v)\n", float64(x0)+deltaX, float64(y0)+deltaY)
-			dc.DrawCircle(c.Glyphs[i].XPos, c.Glyphs[i].YPos, c.Glyphs[i].Radius)
 			break
+
 		case c.Glyphs[i].Step <= RADIANS:
 			if deltaX < 0 {
 				deltaX = -deltaX
@@ -136,12 +135,15 @@ func DrawColloquy(x0 float64, y0 float64, dc *gg.Context, c *gglyphs.Colloquy) {
 			dc.SetRGB(0, 0, 0)
 			fmt.Printf("I think I'm in quadrant IV (deltaX, deltaY) = (%v,%v)\n", deltaX, deltaY)
 			fmt.Printf("(x,y) = (%v, %v)\n", float64(x0)+deltaX, float64(y0)+deltaY)
-			dc.DrawCircle(c.Glyphs[i].XPos, c.Glyphs[i].YPos, c.Glyphs[i].Radius)
 			break
 		}
 
-		//x := float64(x0) + deltaX
-		//y := float64(y0) + deltaY
+		c.Glyphs[i].XPos = c.X + deltaX
+		c.Glyphs[i].YPos = c.Y + deltaY
+		if c.Glyphs[i].Radius < 10 {
+			c.Glyphs[i].Radius = 10
+		}
+		dc.DrawCircle(c.Glyphs[i].XPos, c.Glyphs[i].YPos, c.Glyphs[i].Radius)
 
 	}
 }
