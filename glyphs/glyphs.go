@@ -145,7 +145,7 @@ func (g *Glyph) Draw(dc *gg.Context) {
 func (c *Colloquy) Parse() {
 
 	words := strings.Fields(c.Sentence)
-	firstWordStart := .75 * RADIANS // TODO - verify
+	firstWordStart := .25 * RADIANS // TODO - verify
 	myStep := firstWordStart
 	c.Glyphs = make([]*Glyph, len(words))
 	for i := range words {
@@ -153,7 +153,7 @@ func (c *Colloquy) Parse() {
 		g.Parse()
 		c.Glyphs[i] = g
 		// update myStep and handle wrap arounds
-		myStep += c.Step
+		myStep -= c.Step
 		if myStep > RADIANS {
 			myStep -= 2 * RADIANS
 		}
